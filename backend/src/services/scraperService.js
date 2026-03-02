@@ -288,9 +288,8 @@ export async function getAnimeDetails(animeId) {
 async function fetchAllEpisodes(page, animeId) {
   const parseEpisodes = (data) =>
     (data.data || []).map((ep) => ({
-      episodeNumber: ep.episode,
+      originalEpisode: ep.episode,
       session: ep.session,
-      title: `Episode ${ep.episode}`,
       snapshot: ep.snapshot,
       duration: ep.duration,
       createdAt: ep.created_at,
@@ -331,7 +330,15 @@ async function fetchAllEpisodes(page, animeId) {
     for (const eps of pageResults) episodes.push(...eps)
   }
 
-  return episodes
+  // Renumber episodes starting from 1 (animepahe uses aggregate numbering across seasons)
+  return episodes.map((ep, i) => ({
+    episodeNumber: i + 1,
+    session: ep.session,
+    title: `Episode ${i + 1}`,
+    snapshot: ep.snapshot,
+    duration: ep.duration,
+    createdAt: ep.createdAt,
+  }))
 }
 
 // ---------------------------------------------------------------------------

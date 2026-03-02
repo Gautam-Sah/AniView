@@ -24,3 +24,18 @@ export async function getEpisodeVideo(animeId, episodeNumber) {
   const { data } = await api.get(`/episode/${animeId}/${episodeNumber}`);
   return data;
 }
+
+export async function get9animeVideo(animeName, audioType, episodeNumber) {
+  const { data } = await api.get("/9anime/video", {
+    params: { anime: animeName, type: audioType, episode: episodeNumber },
+  });
+  return data;
+}
+
+export async function getAnimeDaoVideo(animeName, episodeNumber) {
+  const { data } = await api.get("/animedao/video", {
+    params: { anime: animeName, episode: episodeNumber },
+  });
+  return data;
+}
+

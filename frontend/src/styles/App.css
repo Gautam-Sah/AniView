@@ -328,7 +328,79 @@ img {
 
 /* ===== Video Player ===== */
 .video-player-page h2 {
-  margin-bottom: 16px;
+  margin-bottom: 12px;
+}
+
+.player-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.audio-toggle {
+  display: flex;
+  gap: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 3px;
+}
+
+.audio-btn {
+  padding: 6px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.audio-btn.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.audio-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.server-selector {
+  display: flex;
+  gap: 8px;
+}
+
+.server-btn {
+  padding: 8px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.server-btn:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.server-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.server-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .player-container {

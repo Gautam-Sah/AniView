@@ -5,6 +5,8 @@ import {
   resolveEpisodeSession,
   getFeaturedAnime,
 } from "../services/scraperService.js"
+import { get9animeVideo } from "../services/nineAnimeScraper.js"
+import { getAnimeDaoVideo } from "../services/animeDaoScraper.js"
 
 /**
  * GET /api/featured
@@ -79,6 +81,52 @@ export async function episode(req, res, next) {
 
     const video = await getEpisodeVideo(animeId, session)
     res.json({ episodeNumber, ...video })
+  } catch (err) {
+    next(err)
+  }
+}
+
+/**
+ * GET /api/9anime/video?anime=demon slayer&type=sub&episode=1
+ */
+export async function nineAnimeVideo(req, res, next) {
+  try {
+    const { anime, type, episode } = req.query
+
+    if (!anime || typeof anime !== "string" || anime.trim().length === 0) {
+      return res.status(400).json({ error: "Query parameter 'anime' is required" })
+    }
+    if (!episode || !/^\d+$/.test(episode)) {
+      return res.status(400).json({ error: "Query parameter 'episode' must be a number" })
+    }
+
+    if (!type || (type !== "sub" && type !== "dub")) {
+      return res.status(400).json({ error: "Query parameter 'type' must be 'sub' or 'dub'" })
+    }
+    const audioType = type
+    const result = await get9animeVideo(anime.trim(), audioType, episode)
+    res.json(result)
+  } catch (err) {
+    next(err)
+  }
+}
+
+/**
+ * GET /api/animedao/video?anime=solo leveling&episode=1
+ */
+export async function animeDaoVideo(req, res, next) {
+  try {
+    const { anime, episode } = req.query
+
+    if (!anime || typeof anime !== "string" || anime.trim().length === 0) {
+      return res.status(400).json({ error: "Query parameter 'anime' is required" })
+    }
+    if (!episode || !/^\d+$/.test(episode)) {
+      return res.status(400).json({ error: "Query parameter 'episode' must be a number" })
+    }
+
+    const result = await getAnimeDaoVideo(anime.trim(), episode)
+    res.json(result)
   } catch (err) {
     next(err)
   }
