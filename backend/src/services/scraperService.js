@@ -118,13 +118,36 @@ export async function getFeaturedAnime() {
 
   let titles = []
   try {
-    const res = await fetch(jikanUrl)
-    const json = await res.json()
-    titles = (json.data || [])
-      .map((a) => a.title_english || a.title)
-      .filter(Boolean)
-      .slice(0, 20)
-    console.log(`[Scraper] Got ${titles.length} titles from Jikan`)
+    // Try current season first, fall back to top anime if it fails
+    const urls = [
+      jikanUrl,
+      `https://api.jikan.moe/v4/seasons/now?limit=20`,
+      `https://api.jikan.moe/v4/top/anime?type=tv&filter=airing&limit=20`,
+    ]
+    for (const url of urls) {
+      try {
+        const res = await fetch(url)
+        if (!res.ok) {
+          console.warn(`[Scraper] Jikan returned ${res.status} for ${url}`)
+          continue
+        }
+        const json = await res.json()
+        titles = (json.data || [])
+          .map((a) => a.title_english || a.title)
+          .filter(Boolean)
+          .slice(0, 20)
+        if (titles.length > 0) {
+          console.log(`[Scraper] Got ${titles.length} titles from ${url}`)
+          break
+        }
+      } catch (err) {
+        console.warn(`[Scraper] Jikan fetch failed for ${url}:`, err.message)
+      }
+    }
+    if (titles.length === 0) {
+      console.error("[Scraper] All Jikan endpoints failed")
+      return []
+    }
   } catch (err) {
     console.error("[Scraper] Jikan API failed:", err.message)
     return []
@@ -189,7 +212,9 @@ export async function getFeaturedAnime() {
 function decodeHtmlEntities(str) {
   return str
     .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(n))
-    .replace(/&#x([0-9a-fA-F]+);/g, (_, n) => String.fromCharCode(parseInt(n, 16)))
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, n) =>
+      String.fromCharCode(parseInt(n, 16)),
+    )
     .replace(/&amp;/g, "&")
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">")
